@@ -1,0 +1,15 @@
+{
+  "name": "gc-project",
+  "version": "1.0.0",
+  "description": "App Gestion de cuentas",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --mode production"
+  },
+  "author": "Antonio Humanes Pacheco",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.7"
+  }
+}

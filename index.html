@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./src/shared-styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <title>App Gestor de Cuentas</title>
+    <style>
+
+        /* Page grid sections */
+
+
+        .form-insert-count {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, 100%);
+            grid-column-gap: 10px;
+            align-items: center;
+        }
+
+        @media (min-width: 768px) {
+            .form-insert-count {
+                grid-template-columns: repeat(auto-fit, minmax(219px, max-content));
+            }
+        }
+
+        gc-button svg {
+            fill: var(--color-white);
+            width: 18px;
+            height: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <h1>Esto es una lista de gastos/ ingresos</h1>
+        <section class="form-insert-count">
+            <div>
+                <gc-input placeholder="Descripción" typeInput="text" claseVariacion="" idComponent="inputDescription">
+                </gc-input>
+            </div>
+            <div>
+                <gc-input placeholder="Importe €" typeInput="number" claseVariacion="" idComponent="inputValor">
+                </gc-input>
+            </div>
+            <div>
+                <gc-button textButton="Enviar" claseVariacion="gc-button--icon margin-bottom--sm"><svg slot="icon"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                        <path d="M0 0h24v24H0z" fill="none" /></svg>
+                </gc-button>
+            </div>
+        </section>
+
+        <section class="form-insert-rows">
+            <gc-item-list description="Nómina del mes" price="4500"></gc-item-list>
+            <gc-item-list description="Compra el coche nuevo" price="-2000"></gc-item-list>
+            <gc-item-list description="Website project para BBVA" price="4000"></gc-item-list>
+            <gc-item-list description="Compra de ordenador gaming" price="-900"></gc-item-list>
+        </section>
+    </div>
+
+    <script src="./node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="./src/index.js" type="module"></script>
+</body>
+
+</html>
