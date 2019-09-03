@@ -15,8 +15,8 @@ export class GcButton extends LitElement {
         .gc-button{
             min-width: 100px;
             padding: 9px 15px;
-            border: 1px solid #333;
-            background-color: #333;
+            border: 1px solid var(--color-grey-dark);
+            background-color: var(--color-grey-dark);
             color: white;
             font-size: 1rem;
             cursor: pointer;
@@ -34,7 +34,7 @@ export class GcButton extends LitElement {
 
         .gc-button--ghost{
             background-color: transparent;
-            color: #333;
+            color: var(--color-grey-dark);
         }  
 
         .gc-button--icon{
@@ -54,7 +54,8 @@ export class GcButton extends LitElement {
     constructor() {
         super();
         this.textButton = 'Text Button',
-            this.claseVariacion = ''
+        this.claseVariacion = '',
+        this.send = false
     }
 
 
@@ -66,13 +67,27 @@ export class GcButton extends LitElement {
             claseVariacion: {
                 type: String
             },
+            send: {
+                type: Boolean
+            }
         };
     }
 
     render() {
         return html `
-        <button class="gc-button ${this.claseVariacion}">${this.textButton} <slot name="icon"></slot></button>
+        <button 
+        class="gc-button ${this.claseVariacion}"
+         @click="${this.actionButtonClick}">${this.textButton} <slot name="icon"></slot></button>
         `;
+    }
+
+    actionButtonClick(){
+        this.send = true
+        this.dispatchEvent(new CustomEvent('clickButtonForm', {
+            bubbles: true,
+            composed: true,
+            detail: this.send
+        }));
     }
 }
 customElements.define('gc-button', GcButton);

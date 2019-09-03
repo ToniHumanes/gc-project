@@ -29,12 +29,22 @@ export class GcItemList extends LitElement {
             justify-content: space-between;
             align-items: center;
         }
+
+        /* Variaciones */
+
+        .list-item--first-icon{
+            grid-template-columns: auto 1fr auto;
+        }
+
+        .list-item--second-icon{
+            grid-template-columns: auto auto 1fr auto;
+        }
         
         .list-item__title{
             font-size: 17px;
             margin-bottom: 0px;
             margin-top:0px;
-            color: #333;
+            color: var(--color-grey-dark);
         }
 
         .list-item__price{
@@ -57,7 +67,9 @@ export class GcItemList extends LitElement {
     constructor() {
         super();
         this.description = '',
-        this.price = 0
+        this.price = 0,
+        this.iconDelete = false,
+        this.iconEdit = false
     }
 
 
@@ -65,14 +77,33 @@ export class GcItemList extends LitElement {
         return {
             description: {type: String},
             price: {type: Number},
+            iconEdit: {type: Boolean},
+            iconDelete: { type: Boolean}
         };
     }
 
     render() {
         return html`
-            <div class="list-item">
+            <div 
+                class="list-item 
+                ${  this.iconEdit && this.iconDelete ? 'list-item--second-icon' : '' 
+                    || 
+                    this.iconEdit || this.iconDelete ? 'list-item--first-icon' : ''
+                }">
+
+            ${this.iconEdit ? 
+                html`<gc-icon 
+                    icon="edit" 
+                    @action-icon-click="${this.actionMenuItem}">
+                </gc-icon>` : ''}
+
+            ${this.iconDelete ? 
+                html`<gc-icon 
+                    icon="delete" 
+                    @action-icon-click="${this.actionMenuItem}">
+                </gc-icon>` : ''}
+
                 <p class="list-item__title">${this.description}</p>
-                
                 <p class="list-item__price ${this.isPositiveOrNegative() ? 'list-item--price-negative' : 'list-item--price-positive' }">${this.price}€</p>
             </div>
         `;
@@ -85,6 +116,14 @@ export class GcItemList extends LitElement {
             return false
         }else{
             return false
+        }
+    }
+
+    actionMenuItem(e){
+        if( e.detail.nameIcon === 'edit'){
+            console.log('Vamos a editar');
+        }else if(e.detail.nameIcon === 'delete'){
+            this.parentNode.removeChild(this)
         }
     }
 }

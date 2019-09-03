@@ -10,6 +10,11 @@
         --color-grey: #f3f3f3;
         --color-border-grey: #eaeaea;
         --color-white: white;
+        --color-grey-dark: #333333;
+
+            /* Icons */
+
+            --icon-sm: 15px;
 
         /* Space */
         --space-unit: 1em;
@@ -21,6 +26,8 @@
         --space-xl:   calc(3.25 * var(--space-unit));
         --space-xxl:  calc(5.25 * var(--space-unit));
     }
+
+
 
 
     /* Reset & Element page */
