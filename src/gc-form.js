@@ -8,6 +8,21 @@ export class GcForm extends LitElement {
 
     static get styles() {
         return css `
+
+            .gc-form{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, 100%);
+                grid-column-gap: 10px;
+                align-items: center;
+            }
+
+            @media (min-width: 768px) {
+                .gc-form {
+                    grid-template-columns: repeat(auto-fit, minmax(219px, max-content));
+                }
+            }
+
+
         gc-button svg {
             fill: var(--color-white);
             width: 18px;

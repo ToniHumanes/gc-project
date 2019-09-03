@@ -7,7 +7,9 @@ import {
 export class GcApp extends LitElement {
 
     static get styles() {
-        return css ``
+        return css `
+            
+        `
     }
 
     constructor() {
