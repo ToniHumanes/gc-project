@@ -20,7 +20,7 @@ export class GcList extends LitElement {
         return {
             tasks: {
                 type: Array
-            },
+            }
         };
     }
 

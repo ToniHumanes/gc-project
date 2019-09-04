@@ -16,12 +16,12 @@ export class GcApp extends LitElement {
         super();
         this.tasks = [{
                 description: 'Nota de prueba',
-                price: 0,
+                price: '',
                 iconEdit: true,
                 iconDelete: true,
                 id: 0
             }],
-            this.textButton = 'Crear Nota'
+        this.textButton = 'Crear Nota'
     }
 
 
@@ -77,18 +77,19 @@ export class GcApp extends LitElement {
 
     editData(e) {
         if (e.detail.edit === true) {
+
             if (this.tasks[e.detail.id].id === e.detail.id) {
 
+                let identArray = this.shadowRoot.querySelector('gc-list').shadowRoot.querySelectorAll('gc-item-list')
+                let ArrayInputs = identArray[e.detail.id].shadowRoot.querySelector('gc-form').shadowRoot.querySelectorAll('gc-input')
                 let ArrayValues = [];
 
-                let identArray = this.shadowRoot.querySelector('gc-list').shadowRoot.querySelectorAll('gc-item-list')
-                for (let i = 0; i < identArray.length; i++) {
-                    if (Number(identArray[i].getAttribute('ident')) === this.tasks[e.detail.id].id) {
-                        let ArrayInputs = identArray[e.detail.id].shadowRoot.querySelector('gc-form').shadowRoot.querySelectorAll('gc-input')
-                        for (let i = 0; i < ArrayInputs.length; i++) {
-                            let ArrayInputsValues = ArrayInputs[i].shadowRoot.querySelector('input').value;
-                            ArrayValues.push(ArrayInputsValues);
-                        }
+                // Llegamos hasta los inputs, recogemos el valor y lo insertamos en gc-item-list, editando así el contenido.
+
+                if (Number(identArray[e.detail.id].getAttribute('ident')) === this.tasks[e.detail.id].id) {
+                    for (let i = 0; i < ArrayInputs.length; i++) {
+                        let ArrayInputsValues = ArrayInputs[i].shadowRoot.querySelector('input').value;
+                        ArrayValues.push(ArrayInputsValues);
                     }
                 }
 
@@ -100,16 +101,20 @@ export class GcApp extends LitElement {
                     id: e.detail.id
                 }
 
-                this.tasks[e.detail.id] = {
-                    ...ArrayValuesObject
-                }
-
-                for (let i = 0; i < identArray.length; i++) {
-                    let ArrayInputs = identArray[e.detail.id].shadowRoot.querySelector('gc-form').shadowRoot.querySelectorAll('gc-input')
-                    for (let i = 0; i < ArrayInputs.length; i++) {
-                        ArrayInputs[i].shadowRoot.querySelector('input').value = ''
+                if (ArrayValuesObject.description === '' || ArrayValuesObject.price === '') {
+                    alert('Faltan campos por completar')
+                }else{
+                    this.tasks[e.detail.id] = {
+                        ...ArrayValuesObject
                     }
                 }
+
+
+                // Limpiamos el valor de los inputs de edición
+
+                    for (let i = 0; i < ArrayInputs.length; i++) {
+                        ArrayInputs[i].shadowRoot.querySelector('input').value = ''
+                    }                
 
                 this.shadowRoot.querySelector('gc-list').requestUpdate();
             }

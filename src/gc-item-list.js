@@ -68,7 +68,7 @@ export class GcItemList extends LitElement {
     constructor() {
         super();
         this.description = '',
-        this.price = 0,
+        this.price = '',
         this.iconDelete = false,
         this.iconEdit = false,
         this.show = false,
@@ -92,12 +92,11 @@ export class GcItemList extends LitElement {
 
     render() {
         return html`
-            <div 
-                class="list-item ${  this.iconEdit && this.iconDelete ? 'list-item--second-icon' : '' 
+            <div class="list-item ${  this.iconEdit && this.iconDelete ? 'list-item--second-icon' : '' 
                     || 
                     this.iconEdit || this.iconDelete ? 'list-item--first-icon' : ''
                 }" 
-                id="${this.ident}"  >
+                id="${this.ident}">
 
             ${this.iconEdit ? 
                 html`<gc-icon 
@@ -115,7 +114,7 @@ export class GcItemList extends LitElement {
                 <p class="list-item__price ${this.isPositiveOrNegative() ? 'list-item--price-negative' : 'list-item--price-positive' }">${this.price}€</p>
 
                 </div>
-                ${this.show ? html`<gc-form .edit="${this.edit}" textButton="${this.textButton}" ident="${this.ident}"></gc-form>` : ''}
+                ${this.show ? html`<gc-form .edit="${this.edit}" textButton="${this.textButton}" ident="${this.ident}" description="${this.description}" price="${this.price}" show="${this.show}"></gc-form>` : ''}
         `;
     }
 
