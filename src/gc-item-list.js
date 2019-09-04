@@ -1,11 +1,13 @@
-
-
-import { LitElement, html, css } from 'lit-element';
+import {
+    LitElement,
+    html,
+    css
+} from 'lit-element';
 
 export class GcItemList extends LitElement {
 
-    static get styles(){
-        return css`
+    static get styles() {
+        return css `
         
         :host{
             border-bottom: 1px solid var(--color-border-grey);
@@ -68,30 +70,44 @@ export class GcItemList extends LitElement {
     constructor() {
         super();
         this.description = '',
-        this.price = '',
-        this.iconDelete = false,
-        this.iconEdit = false,
-        this.show = false,
-        this.textButton = 'Editar Nota',
-        this.edit = true,
-        this.ident = 0
+            this.price = '',
+            this.iconDelete = false,
+            this.iconEdit = false,
+            this.show = false,
+            this.textButton = 'Editar Nota',
+            this.edit = true,
+            this.ident = 0
     }
 
 
     static get properties() {
         return {
-            description: {type: String},
-            price: {type: Number},
-            iconEdit: {type: Boolean},
-            iconDelete: { type: Boolean},
-            show: { type: Boolean},
-            edit: { type: Boolean},
-            ident: { type: Number },
+            description: {
+                type: String
+            },
+            price: {
+                type: Number
+            },
+            iconEdit: {
+                type: Boolean
+            },
+            iconDelete: {
+                type: Boolean
+            },
+            show: {
+                type: Boolean
+            },
+            edit: {
+                type: Boolean
+            },
+            ident: {
+                type: Number
+            },
         };
     }
 
     render() {
-        return html`
+        return html `
             <div class="list-item ${  this.iconEdit && this.iconDelete ? 'list-item--second-icon' : '' 
                     || 
                     this.iconEdit || this.iconDelete ? 'list-item--first-icon' : ''
@@ -114,28 +130,38 @@ export class GcItemList extends LitElement {
                 <p class="list-item__price ${this.isPositiveOrNegative() ? 'list-item--price-negative' : 'list-item--price-positive' }">${this.price}€</p>
 
                 </div>
-                ${this.show ? html`<gc-form .edit="${this.edit}" textButton="${this.textButton}" ident="${this.ident}" description="${this.description}" price="${this.price}" show="${this.show}"></gc-form>` : ''}
+                ${this.show ? html`<gc-form .edit="${this.edit}" textButton="${this.textButton}" ident="${this.ident}" description="${this.description}" price="${this.price}" .show="${this.show}"></gc-form>` : ''}
         `;
     }
 
-    isPositiveOrNegative(){
-        if(Math.sign(this.price) === -1){
+    isPositiveOrNegative() {
+        if (Math.sign(this.price) === -1) {
             return true
-        }else if(Math.sign(this.price) === 1){
+        } else if (Math.sign(this.price) === 1) {
             return false
-        }else{
+        } else {
             return false
         }
     }
 
-    actionMenuItem(e){
-        if( e.detail.nameIcon === 'edit'){
-            if(this.show === true){
+    actionMenuItem(e) {
+
+        // Función dropdown 
+        if (e.detail.nameIcon === 'edit') {
+            if (this.show === true) {
                 this.show = false;
-            }else{
+            } else {
+                // Función tab 
+                let list = this.parentNode.querySelectorAll('gc-item-list')
+                for (let i = 0; i < list.length; i++) {
+                    if (list[i].shadowRoot.querySelector('gc-form')) {
+                        let element = list[i]
+                        element.show = false
+                    }
+                }
                 this.show = true;
             }
-        }else if(e.detail.nameIcon === 'delete'){
+        } else if (e.detail.nameIcon === 'delete') {
             this.parentNode.removeChild(this)
         }
     }

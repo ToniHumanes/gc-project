@@ -26,9 +26,8 @@ export class GcList extends LitElement {
 
     render() {
         return html `
-            ${this.tasks.map(task => html`<gc-item-list description="${task.description}" price="${task.price}" .iconEdit="${task.iconEdit}" .iconDelete="${task.iconDelete}" ident="${task.id}"></gc-item-list>`)}
+            ${this.tasks.map(task => html`<gc-item-list description="${task.description}" price="${task.price}" .iconEdit="${task.iconEdit}" .iconDelete="${task.iconDelete}" ident="${task.id}" .show="${task.show}"></gc-item-list>`)}
         `;
     }
-
 }
 customElements.define('gc-list', GcList);
