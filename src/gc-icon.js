@@ -31,7 +31,8 @@ export class GcIcon extends LitElement {
         `;
     }
 
-    actionIconClick(){
+    actionIconClick(e){
+        e.preventDefault();
         this.dispatchEvent(new CustomEvent('action-icon-click', {
             detail: {
                 nameIcon: this.icon,

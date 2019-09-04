@@ -33,16 +33,22 @@ export class GcForm extends LitElement {
 
     constructor() {
         super();
+        this.textButton = '',
+        this.edit = false,
+        this.ident = 0
     }
 
     static get properties() {
         return {
+            textButton: { type: String },
+            edit: { type: Boolean },
+            ident: { type: Number}
         };
     }
 
     render() {
         return html `
-        <div class="gc-form">
+        <div class="gc-form" id="${this.ident}">
             <div>
                 <gc-input placeholder="Descripción" typeInput="text" claseVariacion="" idComponent="inputDescription"></gc-input>
             </div>
@@ -50,7 +56,7 @@ export class GcForm extends LitElement {
                 <gc-input placeholder="Importe " typeInput="number" idComponent="inputValor"></gc-input>
             </div>
             <div>
-                <gc-button textButton="Crear Nota" claseVariacion="gc-button--icon"><svg slot="icon"
+                <gc-button textButton="${this.textButton}" .edit="${this.edit}" claseVariacion="gc-button--icon" ident="${this.ident}" ><svg slot="icon"
                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                         <path d="M0 0h24v24H0z" fill="none" /></svg>

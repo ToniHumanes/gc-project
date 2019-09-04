@@ -10,6 +10,7 @@ export class GcItemList extends LitElement {
         :host{
             border-bottom: 1px solid var(--color-border-grey);
             display: block;
+            padding: 8px 10px 8px;
         }
         
         :host(:first-of-type){
@@ -69,7 +70,11 @@ export class GcItemList extends LitElement {
         this.description = '',
         this.price = 0,
         this.iconDelete = false,
-        this.iconEdit = false
+        this.iconEdit = false,
+        this.show = false,
+        this.textButton = 'Editar Nota',
+        this.edit = true,
+        this.ident = 0
     }
 
 
@@ -78,18 +83,21 @@ export class GcItemList extends LitElement {
             description: {type: String},
             price: {type: Number},
             iconEdit: {type: Boolean},
-            iconDelete: { type: Boolean}
+            iconDelete: { type: Boolean},
+            show: { type: Boolean},
+            edit: { type: Boolean},
+            ident: { type: Number },
         };
     }
 
     render() {
         return html`
             <div 
-                class="list-item 
-                ${  this.iconEdit && this.iconDelete ? 'list-item--second-icon' : '' 
+                class="list-item ${  this.iconEdit && this.iconDelete ? 'list-item--second-icon' : '' 
                     || 
                     this.iconEdit || this.iconDelete ? 'list-item--first-icon' : ''
-                }">
+                }" 
+                id="${this.ident}"  >
 
             ${this.iconEdit ? 
                 html`<gc-icon 
@@ -105,7 +113,9 @@ export class GcItemList extends LitElement {
 
                 <p class="list-item__title">${this.description}</p>
                 <p class="list-item__price ${this.isPositiveOrNegative() ? 'list-item--price-negative' : 'list-item--price-positive' }">${this.price}€</p>
-            </div>
+
+                </div>
+                ${this.show ? html`<gc-form .edit="${this.edit}" textButton="${this.textButton}" ident="${this.ident}"></gc-form>` : ''}
         `;
     }
 
@@ -121,7 +131,11 @@ export class GcItemList extends LitElement {
 
     actionMenuItem(e){
         if( e.detail.nameIcon === 'edit'){
-            console.log('Vamos a editar');
+            if(this.show === true){
+                this.show = false;
+            }else{
+                this.show = true;
+            }
         }else if(e.detail.nameIcon === 'delete'){
             this.parentNode.removeChild(this)
         }
