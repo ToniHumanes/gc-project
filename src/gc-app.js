@@ -14,37 +14,10 @@ export class GcApp extends LitElement {
 
     constructor() {
         super();
-        this.tasks = [
-            {
-                description: 'Nota de prueba',
-                price: '',
-                iconEdit: true,
-                iconDelete: true,
-                id: 0
-            },
-            {
-                description: 'a',
-                price: 1,
-                iconEdit: true,
-                iconDelete: true,
-                id: 1
-            },
-            {
-                description: 'b',
-                price: 2,
-                iconEdit: true,
-                iconDelete: true,
-                id: 2
-            },
-            {
-                description: 'c',
-                price: 3,
-                iconEdit: true,
-                iconDelete: true,
-                id: 3
-            }
-        ],
-            this.textButton = 'Crear Nota'
+        this.db = firebase.firestore();
+        this.tasks = [],
+            this.getData = this.getData(this.tasks, this);
+        this.textButton = 'Crear Nota'
     }
 
 
@@ -90,10 +63,12 @@ export class GcApp extends LitElement {
                 alert('Fantan campos por completar')
             } else {
                 this.tasks.push(ArrayValues)
+                //this.addData(ArrayValues, this);
             }
             for (let i = 0; i < ValueDescription.length; i++) {
                 ValueDescription[i].shadowRoot.querySelector('input').value = '';
             }
+
             this.shadowRoot.querySelector('gc-list').requestUpdate();
         }
     }
@@ -101,44 +76,77 @@ export class GcApp extends LitElement {
     editData(e) {
         if (e.detail.edit === true) {
 
-            if (this.tasks[e.detail.id].id === e.detail.id) {
+            let identArray = this.shadowRoot.querySelector('gc-list').shadowRoot.querySelectorAll('gc-item-list')
+            let ArrayValues = [];
 
-                let identArray = this.shadowRoot.querySelector('gc-list').shadowRoot.querySelectorAll('gc-item-list')
-                let ArrayValues = [];
+            // Llegamos hasta los inputs, recogemos el valor y lo insertamos en gc-item-list, editando así el contenido.
 
-                // Llegamos hasta los inputs, recogemos el valor y lo insertamos en gc-item-list, editando así el contenido.
-
-                for (let i = 0; i < identArray.length; i++) {
-                    if (!!identArray[i].shadowRoot.querySelector('gc-form')) {
-                        let ArrayInputs = identArray[i].shadowRoot.querySelector('gc-form').shadowRoot.querySelectorAll('gc-input')
-                        for (let i = 0; i < ArrayInputs.length; i++) {
-                            let ArrayInputsValues = ArrayInputs[i].shadowRoot.querySelector('input').value;
-                            ArrayValues.push(ArrayInputsValues);
-                        }
+            for (let i = 0; i < identArray.length; i++) {
+                if (!!identArray[i].shadowRoot.querySelector('gc-form')) {
+                    let ArrayInputs = identArray[i].shadowRoot.querySelector('gc-form').shadowRoot.querySelectorAll('gc-input')
+                    for (let i = 0; i < ArrayInputs.length; i++) {
+                        let ArrayInputsValues = ArrayInputs[i].shadowRoot.querySelector('input').value;
+                        ArrayValues.push(ArrayInputsValues);
                     }
+                    var id = identArray[i].ident
                 }
-
-                let ArrayValuesObject = {
-                    description: ArrayValues[0],
-                    price: ArrayValues[1],
-                    iconDelete: true,
-                    iconEdit: true,
-                    id: e.detail.id,
-                    show: false
-                }
-
-                if (ArrayValuesObject.description === '' || ArrayValuesObject.price === '') {
-                    alert('Faltan campos por completar')
-                } else {
-                    this.tasks[e.detail.id] = {
-                        ...ArrayValuesObject
-                    }
-                }
-
-                this.shadowRoot.querySelector('gc-list').requestUpdate();
             }
+
+            let ArrayValuesObject = {
+                description: ArrayValues[0],
+                price: ArrayValues[1],
+                iconDelete: true,
+                iconEdit: true,
+                id: e.detail.id,
+                show: false
+            }
+
+            if (ArrayValuesObject.description === '' || ArrayValuesObject.price === '') {
+                alert('Faltan campos por completar')
+            } else {
+                let positionInArray = this.tasks.findIndex((task) => task.id === id)
+                this.tasks[positionInArray] = {
+                    ...ArrayValuesObject
+                }
+            }
+
+            // Iteración para cerrar el formulario despues de editar
+            let itemsList = this.shadowRoot.querySelector('gc-list').shadowRoot.querySelectorAll('gc-item-list')
+            for (let i = 0; i < itemsList.length; i++) {
+                itemsList[i].show = false
+            }
+
+            // Actualizamos la lista para que imprima los datos de nuevo
+            this.shadowRoot.querySelector('gc-list').requestUpdate();
         }
     }
+
+    getData() {
+        this.db.collection("task_item").get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    // doc.data() is never undefined for query doc snapshots
+                    let data = doc.data();
+                    this.tasks.push(data);
+                    this.shadowRoot.querySelector('gc-list').requestUpdate();
+                });
+            })
+            .catch((error) => {
+                console.log("Error getting documents: ", error);
+            });
+    }
+
+
+    // dbChangeTask(){
+    //     this.db.collection("task_item").onSnapshot((querySnapshot) => {
+    //     querySnapshot.forEach((doc) => {
+    //         this.tasks.push(doc.data());
+    //     });
+    // });
+
+    // this.shadowRoot.querySelector('gc-list').requestUpdate();
+
+    // }
 }
 
 customElements.define('gc-app', GcApp);

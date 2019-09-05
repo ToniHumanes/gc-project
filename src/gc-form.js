@@ -37,8 +37,7 @@ export class GcForm extends LitElement {
         this.edit = false,
         this.ident = 0,
         this.description = '',
-        this.price = '',
-        this.show = false
+        this.price = ''
     }
 
     static get properties() {
@@ -47,8 +46,7 @@ export class GcForm extends LitElement {
             edit: { type: Boolean },
             ident: { type: Number},
             description: { type: String},
-            price: { type: Number},
-            show: { type: Boolean}
+            price: { type: Number}
         };
     }
 
@@ -56,13 +54,13 @@ export class GcForm extends LitElement {
         return html `
         <div class="gc-form" id="${this.ident}">
             <div>
-                <gc-input placeholder="Descripción" typeInput="text" claseVariacion="" idComponent="inputDescription" description="${this.show ? this.description : ''}"></gc-input>
+                <gc-input placeholder="Descripción" typeInput="text" claseVariacion="" idComponent="inputDescription" description="${this.edit ? this.description : ''}"></gc-input>
             </div>
             <div>
-                <gc-input placeholder="Importe " typeInput="number" idComponent="inputValor" price="${this.show ? this.price : null}"></gc-input>
+                <gc-input placeholder="Importe " typeInput="number" idComponent="inputValor" price="${this.edit ? this.price : null}"></gc-input>
             </div>
             <div>
-                <gc-button textButton="${this.textButton}" .edit="${this.edit}" claseVariacion="gc-button--icon" ident="${this.ident}" show="${this.show}"><svg slot="icon"
+                <gc-button textButton="${this.textButton}" .edit="${this.edit}" claseVariacion="gc-button--icon" ident="${this.ident}"><svg slot="icon"
                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                         <path d="M0 0h24v24H0z" fill="none" /></svg>
