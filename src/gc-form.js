@@ -44,7 +44,7 @@ export class GcForm extends LitElement {
         return {
             textButton: { type: String },
             edit: { type: Boolean },
-            ident: { type: Number},
+            ident: { type: String},
             description: { type: String},
             price: { type: Number}
         };
@@ -60,7 +60,7 @@ export class GcForm extends LitElement {
                 <gc-input placeholder="Importe " typeInput="number" idComponent="inputValor" price="${this.edit ? this.price : null}"></gc-input>
             </div>
             <div>
-                <gc-button textButton="${this.textButton}" .edit="${this.edit}" claseVariacion="gc-button--icon" ident="${this.ident}"><svg slot="icon"
+                <gc-button @click="${this.actionButtonClick}" textButton="${this.textButton}" .edit="${this.edit}" claseVariacion="gc-button--icon" ident="${this.ident}"><svg slot="icon"
                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                         <path d="M0 0h24v24H0z" fill="none" /></svg>
@@ -69,5 +69,32 @@ export class GcForm extends LitElement {
         </div>
         `;
     }
+
+
+    actionButtonClick() {
+        if (this.edit === true) {
+            this.dispatchEvent(new CustomEvent('clickButtonEdit', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    id: this.ident,
+                    edit: this.edit
+                }
+            }));
+        } else if (this.edit === false) {
+
+            this.send = true
+            this.dispatchEvent(new CustomEvent('clickButtonForm', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    send: this.send,
+                    edit: this.edit
+                }
+            }));
+        }
+    }
+
+
 }
 customElements.define('gc-form', GcForm);

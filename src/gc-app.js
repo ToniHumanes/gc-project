@@ -8,7 +8,6 @@ export class GcApp extends LitElement {
 
     static get styles() {
         return css `
-            
         `
     }
 
@@ -16,8 +15,8 @@ export class GcApp extends LitElement {
         super();
         this.db = firebase.firestore();
         this.tasks = [],
-            this.getData = this.getData(this.tasks, this);
-        this.textButton = 'Crear Nota'
+        this.getChangeData = this.dbChangeTask();
+        this.textButton = 'Insertar'
     }
 
 
@@ -31,7 +30,7 @@ export class GcApp extends LitElement {
 
     render() {
         return html `
-        <div  @clickButtonForm="${this.sendData}" @clickButtonEdit="${this.editData}>
+        <div  @clickButtonForm="${this.sendData}" @clickButtonEdit="${this.editData}" @deleteItem="${this.deleteData}">
             <section class="form-insert-count">
                 <gc-form textButton="${this.textButton}"></gc-form>
             </section>
@@ -43,6 +42,18 @@ export class GcApp extends LitElement {
         `;
     }
 
+    // Real time get data firebase
+    dbChangeTask() {
+        this.db.collection("task_item").onSnapshot((querySnapshot) => {
+            var data = [];
+            querySnapshot.forEach((doc) => {
+                let item = doc.data();
+                item.id = doc.id
+                data.push(item);
+                this.tasks = data;
+            });
+        });
+    }
 
     sendData(e) {
         if (e.detail.edit === false) {
@@ -57,18 +68,27 @@ export class GcApp extends LitElement {
                 price: ArrayValues[1],
                 iconDelete: true,
                 iconEdit: true,
-                id: this.tasks.length
+                show: false
             }
             if (ArrayValues.description === '' || ArrayValues.price === '') {
                 alert('Fantan campos por completar')
             } else {
-                this.tasks.push(ArrayValues)
-                //this.addData(ArrayValues, this);
-            }
-            for (let i = 0; i < ValueDescription.length; i++) {
-                ValueDescription[i].shadowRoot.querySelector('input').value = '';
-            }
+                // añadimos datos a firebase
+                this.db.collection("task_item").add(ArrayValues)
+                .then(() => {
+                    // Hay que crear un componente de feedback
+                    alert('Tarea añadida')
+                })
+                .catch((error) => {
+                    alert('error: ', error)
+                })
 
+                // Limpiamos los campos cuando enviamos los datos
+                for (let i = 0; i < ValueDescription.length; i++) {
+                    ValueDescription[i].shadowRoot.querySelector('input').value = '';
+                }
+            }
+            
             this.shadowRoot.querySelector('gc-list').requestUpdate();
         }
     }
@@ -97,17 +117,27 @@ export class GcApp extends LitElement {
                 price: ArrayValues[1],
                 iconDelete: true,
                 iconEdit: true,
-                id: e.detail.id,
                 show: false
             }
 
             if (ArrayValuesObject.description === '' || ArrayValuesObject.price === '') {
+                // componente feedback
                 alert('Faltan campos por completar')
             } else {
-                let positionInArray = this.tasks.findIndex((task) => task.id === id)
-                this.tasks[positionInArray] = {
-                    ...ArrayValuesObject
-                }
+                // edit static
+                // let positionInArray = this.tasks.findIndex((task) => task.id === id)
+                // this.tasks[positionInArray] = {
+                //     ...ArrayValuesObject
+                // }
+
+                // Añadimos firebase edit
+                this.db.collection("task_item").doc(e.detail.id).update(ArrayValuesObject)
+                .then(()=>{
+                    alert('Tarea editada')
+                })
+                .catch(()=>{
+                    alert('Error al editar')
+                })
             }
 
             // Iteración para cerrar el formulario despues de editar
@@ -121,32 +151,17 @@ export class GcApp extends LitElement {
         }
     }
 
-    getData() {
-        this.db.collection("task_item").get()
-            .then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    // doc.data() is never undefined for query doc snapshots
-                    let data = doc.data();
-                    this.tasks.push(data);
-                    this.shadowRoot.querySelector('gc-list').requestUpdate();
-                });
-            })
-            .catch((error) => {
-                console.log("Error getting documents: ", error);
-            });
+    // delete data in firebase
+    deleteData(e){
+        this.db.collection("task_item").doc(e.detail.id).delete()
+        .then(() => {
+            alert('Se ha eliminado el item')
+        })
+        .catch(() => {
+            alert('error')
+        })
     }
 
-
-    // dbChangeTask(){
-    //     this.db.collection("task_item").onSnapshot((querySnapshot) => {
-    //     querySnapshot.forEach((doc) => {
-    //         this.tasks.push(doc.data());
-    //     });
-    // });
-
-    // this.shadowRoot.querySelector('gc-list').requestUpdate();
-
-    // }
 }
 
 customElements.define('gc-app', GcApp);

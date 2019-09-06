@@ -74,7 +74,7 @@ export class GcItemList extends LitElement {
             this.iconDelete = false,
             this.iconEdit = false,
             this.show = false,
-            this.textButton = 'Editar Nota',
+            this.textButton = 'Editar',
             this.edit = true,
             this.ident = 0
     }
@@ -101,7 +101,7 @@ export class GcItemList extends LitElement {
                 type: Boolean
             },
             ident: {
-                type: Number
+                type: String
             },
         };
     }
@@ -117,13 +117,13 @@ export class GcItemList extends LitElement {
             ${this.iconEdit ? 
                 html`<gc-icon 
                     icon="edit" 
-                    @action-icon-click="${this.actionMenuItem}">
+                    @click="${this.actionMenuItem}">
                 </gc-icon>` : ''}
 
             ${this.iconDelete ? 
                 html`<gc-icon 
                     icon="delete" 
-                    @action-icon-click="${this.actionMenuItem}">
+                    @click="${this.actionMenuItem}">
                 </gc-icon>` : ''}
 
                 <p class="list-item__title">${this.description}</p>
@@ -145,9 +145,10 @@ export class GcItemList extends LitElement {
     }
 
     actionMenuItem(e) {
+        e.preventDefault();
 
         // Función dropdown 
-        if (e.detail.nameIcon === 'edit') {
+        if (e.target.icon === 'edit') {
             if (this.show === true) {
                 this.show = false;
             } else {
@@ -161,8 +162,15 @@ export class GcItemList extends LitElement {
                 }
                 this.show = true;
             }
-        } else if (e.detail.nameIcon === 'delete') {
-            this.parentNode.removeChild(this)
+        } else if (e.target.icon === 'delete') {
+            this.dispatchEvent(new CustomEvent('deleteItem', {
+                composed: true,
+                bubbles: true,
+                detail: {
+                    delete: true,
+                    id: this.ident
+                }
+            }));
         }
     }
 }

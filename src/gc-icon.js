@@ -25,19 +25,10 @@ export class GcIcon extends LitElement {
 
     render() {
         return html`
-        <a href="#" class="gc-icon" @click="${this.actionIconClick}">
+        <a href="#" class="gc-icon">
             ${Icons[this.icon]}
         </a>
         `;
-    }
-
-    actionIconClick(e){
-        e.preventDefault();
-        this.dispatchEvent(new CustomEvent('action-icon-click', {
-            detail: {
-                nameIcon: this.icon,
-            }
-        }));
     }
 }
 customElements.define('gc-icon', GcIcon);

@@ -74,9 +74,6 @@ export class GcButton extends LitElement {
             },
             edit: {
                 type: Boolean
-            },
-            ident: {
-                type: Number
             }
         };
     }
@@ -84,33 +81,10 @@ export class GcButton extends LitElement {
     render() {
         return html `
         <button 
-        class="gc-button ${this.claseVariacion}"
-    @click="${this.actionButtonClick}" .edit="${this.edit}" ident="${this.ident}">${this.textButton} <slot name="icon"></slot></button>
+        class="gc-button ${this.claseVariacion}" .edit="${this.edit}">${this.textButton} <slot name="icon"></slot></button>
         `;
     }
 
-    actionButtonClick() {
-        if (this.edit === true) {
-            this.dispatchEvent(new CustomEvent('clickButtonEdit', {
-                bubbles: true,
-                composed: true,
-                detail: {
-                    id: this.ident,
-                    edit: this.edit
-                }
-            }));
-        } else if (this.edit === false) {
-
-            this.send = true
-            this.dispatchEvent(new CustomEvent('clickButtonForm', {
-                bubbles: true,
-                composed: true,
-                detail: {
-                    send: this.send,
-                    edit: this.edit
-                }
-            }));
-        }
-    }
+    
 }
 customElements.define('gc-button', GcButton);
