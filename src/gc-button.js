@@ -54,10 +54,10 @@ export class GcButton extends LitElement {
     constructor() {
         super();
         this.textButton = 'Text Button',
-            this.claseVariacion = '',
-            this.send = false,
-            this.edit = false,
-            this.ident = 0
+        this.claseVariacion = '',
+        this.send = false,
+        this.edit = false,
+        this.ident = 0
     }
 
 
