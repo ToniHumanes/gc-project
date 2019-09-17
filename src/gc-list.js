@@ -3,6 +3,7 @@ import {
     html,
     css
 } from 'lit-element';
+import './gc-item-list'
 
 export class GcList extends LitElement {
 

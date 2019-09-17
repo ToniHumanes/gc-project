@@ -3,6 +3,8 @@ import {
     html,
     css
 } from 'lit-element';
+import './gc-input';
+import './gc-button'
 
 export class GcForm extends LitElement {
 

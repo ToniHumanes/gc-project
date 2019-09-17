@@ -3,6 +3,8 @@ import {
     html,
     css
 } from 'lit-element';
+import './gc-form';
+import './gc-list';
 
 export class GcApp extends LitElement {
 
