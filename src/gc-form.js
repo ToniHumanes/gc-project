@@ -4,12 +4,18 @@ import {
     css
 } from 'lit-element';
 import './gc-input';
-import './gc-button'
+import './gc-button';
 
 export class GcForm extends LitElement {
 
     static get styles() {
         return css `
+
+            :host svg {
+                fill: var(--color-white);
+                width: 18px;
+                height: 18px;
+            }
 
             .gc-form{
                 display: grid;
@@ -24,12 +30,6 @@ export class GcForm extends LitElement {
                 }
             }
 
-
-        gc-button svg {
-            fill: var(--color-white);
-            width: 18px;
-            height: 18px;
-        }
         `
     }
 
@@ -62,7 +62,7 @@ export class GcForm extends LitElement {
                 <gc-input placeholder="Importe " typeInput="number" idComponent="inputValor" price="${this.edit ? this.price : null}"></gc-input>
             </div>
             <div>
-                <gc-button @click="${this.actionButtonClick}" textButton="${this.textButton}" .edit="${this.edit}" claseVariacion="gc-button--icon" ident="${this.ident}"><svg slot="icon"
+                <gc-button @click="${this.actionButtonForm}" textButton="${this.textButton}" .edit="${this.edit}" claseVariacion="gc-button--icon" ident="${this.ident}"><svg slot="icon"
                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                         <path d="M0 0h24v24H0z" fill="none" /></svg>
@@ -73,30 +73,16 @@ export class GcForm extends LitElement {
     }
 
 
-    actionButtonClick() {
-        if (this.edit === true) {
-            this.dispatchEvent(new CustomEvent('clickButtonEdit', {
-                bubbles: true,
-                composed: true,
-                detail: {
-                    id: this.ident,
-                    edit: this.edit
-                }
-            }));
-        } else if (this.edit === false) {
-
-            this.send = true
+    actionButtonForm() {
             this.dispatchEvent(new CustomEvent('clickButtonForm', {
                 bubbles: true,
                 composed: true,
                 detail: {
-                    send: this.send,
-                    edit: this.edit
+                    id: this.ident,
+                    edit: this.edit,
+                    time: new Date().getTime()
                 }
             }));
-        }
     }
-
-
 }
 customElements.define('gc-form', GcForm);

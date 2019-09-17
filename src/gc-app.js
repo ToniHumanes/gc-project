@@ -5,12 +5,12 @@ import {
 } from 'lit-element';
 import './gc-form';
 import './gc-list';
+import './gc-feedback'
 
 export class GcApp extends LitElement {
 
     static get styles() {
-        return css `
-        `
+        return css ``
     }
 
     constructor() {
@@ -18,7 +18,11 @@ export class GcApp extends LitElement {
         this.db = firebase.firestore();
         this.tasks = [],
         this.getChangeData = this.dbChangeTask();
-        this.textButton = 'Insertar'
+        this.textButton = 'Insertar',
+        this.resultDescription = 'Resultado'
+        this.resultPrice = 0
+        this.active = false
+        this.feedbackText = ''
     }
 
 
@@ -26,13 +30,19 @@ export class GcApp extends LitElement {
         return {
             tasks: {
                 type: Object
+            },
+            active: {
+                type: Boolean
+            },
+            feedbackText: {
+                type: String
             }
         };
     }
 
     render() {
         return html `
-        <div  @clickButtonForm="${this.sendData}" @clickButtonEdit="${this.editData}" @deleteItem="${this.deleteData}">
+        <div  @clickButtonForm="${this.sendData}" @deleteItem="${this.deleteData}">
             <section class="form-insert-count">
                 <gc-form textButton="${this.textButton}"></gc-form>
             </section>
@@ -40,13 +50,19 @@ export class GcApp extends LitElement {
             <section class="form-insert-rows" >
                 <gc-list .tasks="${this.tasks}"></gc-list>
             </section>
+
+            <section class="result">
+                <gc-item-list description="${this.resultDescription}" price="${this.resultPrice}"></gc-item-list>
+            </section>
+
+            <gc-feedback class="${this.active ? 'feedback--active' : ''}" feedbackText="${this.feedbackText}"></gc-feedback>
         </div>
         `;
     }
 
     // Real time get data firebase
     dbChangeTask() {
-        this.db.collection("task_item").onSnapshot((querySnapshot) => {
+        this.db.collection("task_item").orderBy('time', 'desc').onSnapshot((querySnapshot) => {
             var data = [];
             querySnapshot.forEach((doc) => {
                 let item = doc.data();
@@ -54,50 +70,19 @@ export class GcApp extends LitElement {
                 data.push(item);
                 this.tasks = data;
             });
+
+            // Hacemos operación y lo añadimos en la prop
+            if(this.tasks.length >= 1){
+                let result = this.tasks.map(item => Number(item.price)).reduce((total, num) => total + num )
+                this.resultPrice = result;
+            }
+
         });
     }
 
     sendData(e) {
-        if (e.detail.edit === false) {
-            let ArrayValues = [];
-            let ValueDescription = this.shadowRoot.querySelector('gc-form').shadowRoot.querySelectorAll('gc-input');
-            for (let i = 0; i < ValueDescription.length; i++) {
-                let values = ValueDescription[i].shadowRoot.querySelector('input').value;
-                ArrayValues.push(values)
-            }
-            ArrayValues = {
-                description: ArrayValues[0],
-                price: ArrayValues[1],
-                iconDelete: true,
-                iconEdit: true,
-                show: false
-            }
-            if (ArrayValues.description === '' || ArrayValues.price === '') {
-                alert('Fantan campos por completar')
-            } else {
-                // añadimos datos a firebase
-                this.db.collection("task_item").add(ArrayValues)
-                .then(() => {
-                    // Hay que crear un componente de feedback
-                    alert('Tarea añadida')
-                })
-                .catch((error) => {
-                    alert('error: ', error)
-                })
-
-                // Limpiamos los campos cuando enviamos los datos
-                for (let i = 0; i < ValueDescription.length; i++) {
-                    ValueDescription[i].shadowRoot.querySelector('input').value = '';
-                }
-            }
-            
-            this.shadowRoot.querySelector('gc-list').requestUpdate();
-        }
-    }
-
-    editData(e) {
-        if (e.detail.edit === true) {
-
+        if (e.detail.edit) {
+            console.log(e.detail);
             let identArray = this.shadowRoot.querySelector('gc-list').shadowRoot.querySelectorAll('gc-item-list')
             let ArrayValues = [];
 
@@ -110,21 +95,21 @@ export class GcApp extends LitElement {
                         let ArrayInputsValues = ArrayInputs[i].shadowRoot.querySelector('input').value;
                         ArrayValues.push(ArrayInputsValues);
                     }
-                    var id = identArray[i].ident
                 }
             }
 
             let ArrayValuesObject = {
                 description: ArrayValues[0],
-                price: ArrayValues[1],
+                price: Number(ArrayValues[1]),
                 iconDelete: true,
                 iconEdit: true,
-                show: false
+                show: false,
+                time: e.detail.time
             }
 
-            if (ArrayValuesObject.description === '' || ArrayValuesObject.price === '') {
+            if (!ArrayValuesObject.description || !ArrayValuesObject.price) {
                 // componente feedback
-                alert('Faltan campos por completar')
+                this.feedbackMessage('Faltan campos por completar o los datos no son validos')
             } else {
                 // edit static
                 // let positionInArray = this.tasks.findIndex((task) => task.id === id)
@@ -135,10 +120,10 @@ export class GcApp extends LitElement {
                 // Añadimos firebase edit
                 this.db.collection("task_item").doc(e.detail.id).update(ArrayValuesObject)
                 .then(()=>{
-                    alert('Tarea editada')
+                    this.feedbackMessage('Tarea Editada')
                 })
                 .catch(()=>{
-                    alert('Error al editar')
+                    this.feedbackMessage('Error al editar')
                 })
             }
 
@@ -150,18 +135,67 @@ export class GcApp extends LitElement {
 
             // Actualizamos la lista para que imprima los datos de nuevo
             this.shadowRoot.querySelector('gc-list').requestUpdate();
+        }else{
+            console.log(e.detail);
+            let ArrayValues = [];
+            let ValueDescription = this.shadowRoot.querySelector('gc-form').shadowRoot.querySelectorAll('gc-input');
+            for (let i = 0; i < ValueDescription.length; i++) {
+                let values = ValueDescription[i].shadowRoot.querySelector('input').value;
+                ArrayValues.push(values)
+            }
+            ArrayValues = {
+                description: ArrayValues[0],
+                price: Number(ArrayValues[1]),
+                iconDelete: true,
+                iconEdit: true,
+                show: false,
+                time: e.detail.time
+            }
+            if (!ArrayValues.description || !ArrayValues.price) {
+                this.feedbackMessage('Faltan campos por completar o los datos no son validos')
+            } else {
+                // añadimos datos a firebase
+                this.db.collection("task_item").add(ArrayValues)
+                .then(() => {
+                    // Hay que crear un componente de feedback
+                    this.feedbackMessage('Tarea añadida')
+                })
+                .catch(() => {
+                    this.feedbackMessage('Error al añadir')
+                })
+
+                // Limpiamos los campos cuando enviamos los datos
+                for (let i = 0; i < ValueDescription.length; i++) {
+                    ValueDescription[i].shadowRoot.querySelector('input').value = '';
+                }
+            }
+            
+            this.shadowRoot.querySelector('gc-list').requestUpdate();
         }
+        
     }
 
     // delete data in firebase
     deleteData(e){
         this.db.collection("task_item").doc(e.detail.id).delete()
         .then(() => {
-            alert('Se ha eliminado el item')
+            this.feedbackMessage('Se ha eliminado la tarea')
         })
         .catch(() => {
-            alert('error')
+            this.feedbackMessage('Error')
         })
+    }
+
+    // mensaje de feedback
+
+    feedbackMessage(text){
+        this.feedbackText = text
+        this.active = true
+        this.requestUpdate();
+        setTimeout(() => {
+            this.feedbackText = ''
+            this.active = false
+        }, 4000);
     }
 
 }
