@@ -127,6 +127,9 @@ typings/
 # vuepress build output
 .vuepress/dist
 
+# npm run build
+dist/
+
 # Serverless directories
 .serverless/
 
