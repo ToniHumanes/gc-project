@@ -19,10 +19,11 @@ export class GcFeedback extends LitElement {
             display: flex;
             align-items: center;
             justify-content: center;
-            position: absolute;
+            position: fixed;
             left: 0;
             right: 0;
-            bottom: -100px;
+            bottom: 0;
+            transform: translateY(100px);
             display: none;
         }
 
@@ -33,11 +34,11 @@ export class GcFeedback extends LitElement {
         }
 
         @keyframes active {
-            0% {bottom: -100px;}
-            10%{ bottom: 0px;}
-            50% {bottom: 0px;}
-            90% {bottom: 0px;}
-            100% { bottom: -100px}
+            0% {transform: translateY(100px);}
+            10%{ transform: translateY(0px);}
+            50% {transform: translateY(0px);}
+            90% {transform: translateY(0px);}
+            100% { transform: translateY(100px)}
         }
 
         .feedback__paragraph{
