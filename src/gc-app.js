@@ -23,6 +23,7 @@ export class GcApp extends LitElement {
         this.resultPrice = 0
         this.active = false
         this.feedbackText = ''
+        this.feedbackType = ''
     }
 
 
@@ -35,6 +36,9 @@ export class GcApp extends LitElement {
                 type: Boolean
             },
             feedbackText: {
+                type: String
+            },
+            feedbackType: {
                 type: String
             }
         };
@@ -55,7 +59,7 @@ export class GcApp extends LitElement {
                 <gc-item-list description="${this.resultDescription}" price="${this.resultPrice}"></gc-item-list>
             </section>
 
-            ${this.active ? html`<gc-feedback class="${this.active ? 'feedback--active' : ''}" feedbackText="${this.feedbackText}"></gc-feedback>` : ''}
+            ${this.active ? html`<gc-feedback class="${this.active ? 'feedback--active' : ''} ${this.feedbackType ? this.feedbackType : ''}" feedbackText="${this.feedbackText}"></gc-feedback>` : ''}
         </div>
         `;
     }
@@ -109,7 +113,7 @@ export class GcApp extends LitElement {
 
             if (!ArrayValuesObject.description || !ArrayValuesObject.price) {
                 // componente feedback
-                this.feedbackMessage('Faltan campos por completar o los datos no son validos')
+                this.feedbackMessage('Faltan campos por completar o los datos no son validos', 'error')
             } else {
                 // edit static
                 // let positionInArray = this.tasks.findIndex((task) => task.id === id)
@@ -120,10 +124,10 @@ export class GcApp extends LitElement {
                 // Añadimos firebase edit
                 this.db.collection("task_item").doc(e.detail.id).update(ArrayValuesObject)
                 .then(()=>{
-                    this.feedbackMessage('Tarea Editada')
+                    this.feedbackMessage('Item editado', 'success')
                 })
                 .catch(()=>{
-                    this.feedbackMessage('Error al editar')
+                    this.feedbackMessage('Error al editar', 'error')
                 })
             }
 
@@ -152,16 +156,16 @@ export class GcApp extends LitElement {
                 time: e.detail.time
             }
             if (!ArrayValues.description || !ArrayValues.price) {
-                this.feedbackMessage('Faltan campos por completar o los datos no son validos')
+                this.feedbackMessage('Faltan campos por completar o los datos no son validos', 'error')
             } else {
                 // añadimos datos a firebase
                 this.db.collection("task_item").add(ArrayValues)
                 .then(() => {
                     // Hay que crear un componente de feedback
-                    this.feedbackMessage('Tarea añadida')
+                    this.feedbackMessage('Item añadido', 'success')
                 })
                 .catch(() => {
-                    this.feedbackMessage('Error al añadir')
+                    this.feedbackMessage('Error al añadir', 'error')
                 })
 
                 // Limpiamos los campos cuando enviamos los datos
@@ -179,23 +183,35 @@ export class GcApp extends LitElement {
     deleteData(e){
         this.db.collection("task_item").doc(e.detail.id).delete()
         .then(() => {
-            this.feedbackMessage('Se ha eliminado la tarea')
+            this.feedbackMessage('Item eliminado de la lista', 'success')
         })
         .catch(() => {
-            this.feedbackMessage('Error')
+            this.feedbackMessage('Error', 'error')
         })
     }
 
     // mensaje de feedback
 
-    feedbackMessage(text){
-        this.feedbackText = text
+    feedbackMessage(text, type){
+        this.feedbackText = text;
+        this.feedbackType = this.settingTypeFeedback(type);
         this.active = true
         this.requestUpdate();
         setTimeout(() => {
             this.feedbackText = ''
             this.active = false
         }, 4000);
+    }
+
+    settingTypeFeedback(feedbackType){
+        let type;
+        if(feedbackType === 'success'){
+            type = 'feedback--success';
+        }else if(feedbackType === 'error'){
+            type = 'feedback--error';
+        }
+
+        return type;
     }
 
 }

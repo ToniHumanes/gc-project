@@ -33,6 +33,14 @@ export class GcFeedback extends LitElement {
             display: block;
         }
 
+        :host(.feedback--success){
+            background-color: var(--color-green);
+        }
+
+        :host(.feedback--error){
+            background-color: var(--color-red);
+        }
+
         @keyframes active {
             0% {transform: translateY(100px);}
             10%{ transform: translateY(0px);}
@@ -51,7 +59,8 @@ export class GcFeedback extends LitElement {
 
     constructor() {
         super();
-        this.feedbackText = ''
+        this.feedbackText = '';
+        this.feedbackType = '';
     }
 
 
@@ -59,12 +68,15 @@ export class GcFeedback extends LitElement {
         return {
             feedbackText: {
                 type: String
+            },
+            feedbackType: {
+                type: String
             }
         };
     }
 
     render() {
-        return html `<p class="feedback__paragraph">${this.feedbackText}</p>`;
+        return html `<p class="feedback__paragraph ${this.feedbackType}">${this.feedbackText}</p>`;
     }
 
 }

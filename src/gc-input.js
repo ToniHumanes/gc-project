@@ -16,7 +16,6 @@ export class GcInput extends LitElement {
                 position: relative;
             }
 
-            /* div contenedor del input, no estan en BEM 100% pero bueno*/
             .contain-input{
                 display: flex;
                 width: 100%;
@@ -55,8 +54,6 @@ export class GcInput extends LitElement {
                     width: auto;
                     margin-bottom: 0px;
                 }
-
-                .input{ width: auto;}
             }
         `
     }
